@@ -4,9 +4,11 @@
     {
         public int Id { get; set; }
 
-        public int ResultPlace { get; set; }
+        public int? ResultPlace { get; set; }
 
         public string EventName { get; set; }
+
+        public string EventDescribtion { get; set; }
 
         public virtual EventRole EventRole { get; set; }
 

@@ -10,7 +10,11 @@ namespace hackatonbb.Models
 
         public decimal Cost { get; set; }
 
+        public string ImageUrl { get; set; }
+
         public virtual ICollection<GuestCourse> Guests { get; set; }
+    
+        public virtual ICollection<Student> Students { get; set; }
     }
 
 }

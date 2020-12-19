@@ -15,7 +15,8 @@ namespace hackatonbb.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true),
-                    Cost = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
+                    Cost = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -223,7 +224,7 @@ namespace hackatonbb.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     VkId = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true),
                     CreditCardProfileId = table.Column<int>(type: "int", nullable: true),
-                    PasswordHash = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true),
+                    Password = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true),
                     Login = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true),
                     Name = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true),
                     Secondname = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true),
@@ -284,8 +285,9 @@ namespace hackatonbb.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ResultPlace = table.Column<int>(type: "int", nullable: false),
+                    ResultPlace = table.Column<int>(type: "int", nullable: true),
                     EventName = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true),
+                    EventDescribtion = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true),
                     EventRoleId = table.Column<int>(type: "int", nullable: true),
                     EventLevelId = table.Column<int>(type: "int", nullable: true),
                     StudentId = table.Column<int>(type: "int", nullable: true)
@@ -311,6 +313,30 @@ namespace hackatonbb.Migrations
                         principalTable: "Students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseStudent",
+                columns: table => new
+                {
+                    BoughtCoursesId = table.Column<int>(type: "int", nullable: false),
+                    StudentsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseStudent", x => new { x.BoughtCoursesId, x.StudentsId });
+                    table.ForeignKey(
+                        name: "FK_CourseStudent_Courses_BoughtCoursesId",
+                        column: x => x.BoughtCoursesId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CourseStudent_Students_StudentsId",
+                        column: x => x.StudentsId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -382,6 +408,11 @@ namespace hackatonbb.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CourseStudent_StudentsId",
+                table: "CourseStudent",
+                column: "StudentsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Guests_CreditCardProfileId",
                 table: "Guests",
                 column: "CreditCardProfileId");
@@ -451,6 +482,9 @@ namespace hackatonbb.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Achievements");
+
+            migrationBuilder.DropTable(
+                name: "CourseStudent");
 
             migrationBuilder.DropTable(
                 name: "GuestsCources");

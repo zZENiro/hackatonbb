@@ -24,51 +24,57 @@ namespace hackatonbb.Controllers
         [Route("[action]")]
         public async Task<IActionResult> GetBankValues([FromQuery] string vkId)
         {
-            var student = await _context.Students.Where(s => s.VkId == vkId).SingleOrDefaultAsync();
+            var student = await _context.Students.Include(prop => prop.CreditCardProfile).Where(s => s.VkId == vkId).SingleOrDefaultAsync();
 
             return new JsonResult(new { CreditCard = student.CreditCardProfile });
         }
 
         [HttpGet]
         [Route("[action]")]
-        public async Task<IActionResult> AddAchievement([FromQuery] string eventName, string place, string role, string level, string vkId) =>
-            await Task.Factory.StartNew(() =>
+        public async Task<IActionResult> AddAchievement([FromQuery] string eventName, string place, string role, string level, string vkId)
+        {
+            Achievement achievement = null;
+
+            var student = await _context.Students.Include(prop => prop.Achievements).Where(s => s.VkId == vkId).SingleOrDefaultAsync();
+
+            var eventLevel = await _context.EventLevels.Where(el => el.Name == level).SingleOrDefaultAsync();
+
+            var eventRole = await _context.EventRoles.Where(er => er.Name == role).SingleOrDefaultAsync();
+            if (eventRole is null || eventRole.Name != "Участник")
             {
-                Achievement achievement = null;
-
-                var student = _context.Students.Where(s => s.VkId == vkId).SingleOrDefault();
-
-                var eventLevel = _context.EventLevels.Where(el => el.Name == level).SingleOrDefault();
-
-                var eventRole = _context.EventRoles.Where(er => er.Name == role).SingleOrDefault();
-                if (eventRole is null || eventRole.Name != "Участник")
-                {
-                    achievement = new Achievement()
-                    {
-                        EventRole = eventRole,
-                        EventLevel = eventLevel,
-                        EventName = eventName
-                    };
-
-                    student.Achievements.Add(achievement);
-                    _context.SaveChanges();
-
-                    return new OkResult();
-                }
-
                 achievement = new Achievement()
                 {
-                    ResultPlace = int.Parse(place),
                     EventRole = eventRole,
                     EventLevel = eventLevel,
                     EventName = eventName
                 };
 
+                if (student.Achievements is null)
+                {
+                    _context.Achievements.Add(achievement);
+                    _context.SaveChanges();
+                    return new OkResult();
+                }
+
                 student.Achievements.Add(achievement);
                 _context.SaveChanges();
 
                 return new OkResult();
-            });
+            }
+
+            achievement = new Achievement()
+            {
+                ResultPlace = int.Parse(place),
+                EventRole = eventRole,
+                EventLevel = eventLevel,
+                EventName = eventName
+            };
+
+            student.Achievements.Add(achievement);
+            _context.SaveChanges();
+
+            return new OkResult();
+        }
 
 
     }

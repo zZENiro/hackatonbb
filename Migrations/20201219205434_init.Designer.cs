@@ -9,7 +9,7 @@ using hackatonbb.Data;
 namespace hackatonbb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201219075855_init")]
+    [Migration("20201219205434_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -18,6 +18,21 @@ namespace hackatonbb.Migrations
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.1");
+
+            modelBuilder.Entity("CourseStudent", b =>
+                {
+                    b.Property<int>("BoughtCoursesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BoughtCoursesId", "StudentsId");
+
+                    b.HasIndex("StudentsId");
+
+                    b.ToTable("CourseStudent");
+                });
 
             modelBuilder.Entity("hackatonbb.Models.Abiturient", b =>
                 {
@@ -59,6 +74,9 @@ namespace hackatonbb.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("EventDescribtion")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
                     b.Property<int?>("EventLevelId")
                         .HasColumnType("int");
 
@@ -68,7 +86,7 @@ namespace hackatonbb.Migrations
                     b.Property<int?>("EventRoleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ResultPlace")
+                    b.Property<int?>("ResultPlace")
                         .HasColumnType("int");
 
                     b.Property<int?>("StudentId")
@@ -93,6 +111,9 @@ namespace hackatonbb.Migrations
 
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -376,7 +397,7 @@ namespace hackatonbb.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<string>("Password")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<double>("Raiting")
@@ -404,6 +425,21 @@ namespace hackatonbb.Migrations
                     b.HasIndex("SpecId");
 
                     b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("CourseStudent", b =>
+                {
+                    b.HasOne("hackatonbb.Models.Course", null)
+                        .WithMany()
+                        .HasForeignKey("BoughtCoursesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hackatonbb.Models.Student", null)
+                        .WithMany()
+                        .HasForeignKey("StudentsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("hackatonbb.Models.Abiturient", b =>

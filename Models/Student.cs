@@ -31,6 +31,8 @@ namespace hackatonbb.Models
 
         public virtual Spec Spec { get; set; }
 
+        public virtual ICollection<Course> BoughtCourses { get; set; }
+
         public virtual ICollection<Achievement> Achievements { get; set; }
 
         public virtual ICollection<RaitingTimeStamp> RaitingTimeStamps { get; set; }

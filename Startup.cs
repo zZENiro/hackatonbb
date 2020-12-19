@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace hackatonbb
 {
@@ -26,22 +27,26 @@ namespace hackatonbb
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-
-            services.AddDbContextPool<vk_dbContext>(options =>
-                options.UseLazyLoadingProxies()
-                       .UseMySql(Environment.GetEnvironmentVariable("DATAVK_ACCESS_CS")));
+            services.AddControllers()
+                .AddNewtonsoftJson(options => 
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddDbContextPool<ApplicationDbContext>(options =>
-                options.UseLazyLoadingProxies()
-                       .UseMySql(Environment.GetEnvironmentVariable("DATA_ACCESS_CS")));
-
+                options.UseMySql(Environment.GetEnvironmentVariable("DATA_ACCESS_CS")));
 
             services.AddCors(config => 
                 config.AddDefaultPolicy(policy =>
                     policy.AllowAnyOrigin()
                           .AllowAnyMethod()
                           .AllowAnyHeader()));
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddCookie(JwtBearerDefaults.AuthenticationScheme, config =>
+                    {
+                        config.Cookie.Name = "AuthCookies";
+                    });
+
+            services.AddSwaggerDocument();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -52,6 +57,9 @@ namespace hackatonbb
             }
 
             app.UseCors();
+
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
 
             app.UseRouting();
 
