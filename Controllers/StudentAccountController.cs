@@ -24,11 +24,11 @@ namespace hackatonbb.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        public async Task<IActionResult> Login([FromBody] string login, string password)
+        public async Task<IActionResult> Login([FromQuery] string login, string password)
         {
             var student = await _context.Students.Where(s => s.Login == login).SingleOrDefaultAsync();
             if (student is null)
-                return new NotFoundResult();
+                return new BadRequestResult();
 
             if (student.Password != password)
                 return new BadRequestResult();
@@ -44,7 +44,7 @@ namespace hackatonbb.Controllers
 
             await HttpContext.SignInAsync(claimsPrincipal);
 
-            return (IActionResult)AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, JwtBearerDefaults.AuthenticationScheme));
+            return new OkResult();
         }
     }
 }

@@ -32,8 +32,8 @@ namespace hackatonbb
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddDbContextPool<ApplicationDbContext>(options =>
-                options.UseMySql(Environment.GetEnvironmentVariable("DATA_ACCESS_CS")));
-
+                options.UseMySql("server=91.243.84.18;uid=root;pwd=123456;database=ss_db;"));
+            //Environment.GetEnvironmentVariable("DATA_ACCESS_CS")
             services.AddCors(config => 
                 config.AddDefaultPolicy(policy =>
                     policy.AllowAnyOrigin()
